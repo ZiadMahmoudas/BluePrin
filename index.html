@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blue House Film</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --cream: #EEEBDE;
+      --cream-dim: rgba(238,235,222,0.55);
+      --cream-faint: rgba(238,235,222,0.1);
+      --dark: #03111C;
+      --darker: #070E1A;
+      --accent: #C8502A;
+      --border: rgba(238,235,222,0.1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Satoshi', sans-serif;
+      background: var(--dark);
+      color: var(--cream);
+      overflow-x: hidden;
+    }
+
+    /* ─── Custom Cursor ─── */
+    .cursor {
+      position: fixed;
+      width: 10px; height: 10px;
+      background: var(--cream);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, width 0.25s, height 0.25s, background 0.25s;
+      mix-blend-mode: difference;
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1px solid rgba(238,235,222,0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease, width 0.3s, height 0.3s, opacity 0.3s;
+    }
+    body:hover .cursor { opacity: 1; }
+
+    /* ─── Navbar ─── */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 32px 48px;
+      z-index: 200;
+    }
+
+    .nav-btn {
+      color: var(--cream);
+      font-size: 12px;
+      letter-spacing: 2px;
+      cursor: none;
+      background: none;
+      border: none;
+      text-transform: uppercase;
+      font-weight: 700;
+      font-family: inherit;
+      mix-blend-mode: difference;
+    }
+
+    .logo-wrap {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* ─── Hero Slider ─── */
+    .hero {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 1.2s cubic-bezier(0.77,0,0.175,1);
+      will-change: opacity;
+    }
+
+    .slide.active { opacity: 1; }
+
+    .slide-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      transform: scale(1.06);
+      transition: transform 7s ease;
+      filter: brightness(0.45);
+    }
+
+    .slide.active .slide-bg {
+      transform: scale(1);
+    }
+
+    .slide-1 .slide-bg { background-image: url('https://images.unsplash.com/photo-1598899134739-24c46f58b8c0?q=80&w=2056&auto=format&fit=crop'); }
+    .slide-2 .slide-bg { background-image: url('https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?q=80&w=2069&auto=format&fit=crop'); }
+    .slide-3 .slide-bg { background-image: url('https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=2059&auto=format&fit=crop'); }
+    .slide-4 .slide-bg { background-image: url('https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=2070&auto=format&fit=crop'); }
+
+    /* Grain overlay */
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 3;
+      opacity: 0.35;
+    }
+
+    .hero-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      text-align: center;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--cream-dim);
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+
+    .hero-title {
+      font-size: clamp(52px, 8vw, 110px);
+      font-weight: 900;
+      letter-spacing: -1px;
+      text-transform: uppercase;
+      line-height: 0.92;
+      margin-bottom: 24px;
+    }
+
+    .hero-title span {
+      display: block;
+    }
+
+    .hero-title .accent-word {
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--cream);
+    }
+
+    .hero-sub {
+      font-size: clamp(12px, 1.2vw, 15px);
+      font-weight: 400;
+      color: var(--cream-dim);
+      letter-spacing: 1.5px;
+      max-width: 480px;
+      line-height: 1.6;
+    }
+
+    /* Hero bottom bar */
+    .hero-bottom {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      z-index: 5;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0 48px 40px;
+    }
+
+    .slide-counter {
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--cream-dim);
+    }
+
+    .slide-counter span {
+      color: var(--cream);
+      font-weight: 700;
+    }
+
+    .hero-scroll {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--cream-dim);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .scroll-line {
+      width: 40px;
+      height: 1px;
+      background: var(--cream-dim);
+      display: block;
+    }
+
+    /* Slider dots */
+    .slider-dots {
+      position: absolute;
+      bottom: 44px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 5;
+    }
+
+    .dot {
+      width: 24px;
+      height: 2px;
+      background: rgba(238,235,222,0.25);
+      cursor: none;
+      transition: background 0.3s, width 0.3s;
+    }
+
+    .dot.active {
+      width: 48px;
+      background: var(--cream);
+    }
+
+    /* ─── Ticker ─── */
+    .ticker-wrap {
+      background: var(--darker);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+      overflow: hidden;
+    }
+
+    .ticker-track {
+      display: flex;
+      gap: 0;
+      width: max-content;
+      animation: tickRun 22s linear infinite;
+    }
+
+    .ticker-track:hover { animation-play-state: paused; }
+
+    .ticker-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 32px;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--cream-dim);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .ticker-sep {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    @keyframes tickRun {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ─── Sections ─── */
+    section {
+      padding: 120px 48px;
+    }
+
+    .section-eyebrow {
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+
+    .section-heading {
+      font-size: clamp(28px, 4vw, 52px);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+      max-width: 820px;
+    }
+
+    /* ─── About Section ─── */
+    .about-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .about-left {}
+
+    .about-right {
+      padding-top: 8px;
+    }
+
+    .about-body {
+      font-size: 16px;
+      color: var(--cream-dim);
+      line-height: 1.75;
+      margin-top: 32px;
+      max-width: 520px;
+    }
+
+    /* ─── Services Grid ─── */
+    .services-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .services-header {
+      margin-bottom: 60px;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--border);
+    }
+
+    .service-card {
+      padding: 40px 32px;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.3s;
+    }
+
+    .service-card:nth-child(3n) { border-right: none; }
+
+    .service-card:hover {
+      background: rgba(238,235,222,0.03);
+    }
+
+    .service-num {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .service-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .service-items {
+      font-size: 13px;
+      color: var(--cream-dim);
+      line-height: 2;
+    }
+
+    /* ─── Work Section ─── */
+    .work-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .work-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 60px;
+    }
+
+    .work-link {
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--cream-dim);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 4px;
+      transition: color 0.25s, border-color 0.25s;
+      font-weight: 500;
+    }
+
+    .work-link:hover {
+      color: var(--cream);
+      border-color: var(--cream);
+    }
+
+    .projects-list { display: flex; flex-direction: column; }
+
+    .project-item {
+      display: grid;
+      grid-template-columns: 60px 1fr 280px;
+      align-items: center;
+      gap: 32px;
+      padding: 28px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: none;
+      text-decoration: none;
+      color: var(--cream);
+      transition: padding-left 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-item:first-child { border-top: 1px solid var(--border); }
+
+    .project-item:hover {
+      padding-left: 12px;
+    }
+
+    .project-num {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--cream-dim);
+      font-weight: 500;
+    }
+
+    .project-title {
+      font-size: clamp(18px, 2.5vw, 32px);
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .project-tags {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .project-tag {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--cream-dim);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      font-weight: 500;
+    }
+
+    /* ─── Testimonials ─── */
+    .testimonials-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .testimonials-header { margin-bottom: 60px; }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      background: var(--border);
+    }
+
+    .testimonial-card {
+      background: var(--dark);
+      padding: 48px 40px;
+      transition: background 0.3s;
+    }
+
+    .testimonial-card:hover {
+      background: rgba(238,235,222,0.03);
+    }
+
+    .t-text {
+      font-size: 15px;
+      color: var(--cream-dim);
+      line-height: 1.75;
+      margin-bottom: 32px;
+      font-style: italic;
+    }
+
+    .t-name {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--cream);
+      margin-bottom: 4px;
+    }
+
+    .t-role {
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--cream-dim);
+    }
+
+    /* ─── Footer / CTA ─── */
+    .footer {
+      background: var(--darker);
+      border-top: 1px solid var(--border);
+      padding: 100px 48px 60px;
+    }
+
+    .footer-cta {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: flex-end;
+      gap: 40px;
+      padding-bottom: 80px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 60px;
+    }
+
+    .footer-headline {
+      font-size: clamp(60px, 10vw, 130px);
+      font-weight: 900;
+      text-transform: uppercase;
+      line-height: 0.88;
+      letter-spacing: -3px;
+    }
+
+    .footer-headline .outline {
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--cream);
+    }
+
+    .footer-cta-right {
+      text-align: right;
+    }
+
+    .footer-email {
+      font-size: 14px;
+      color: var(--cream-dim);
+      margin-bottom: 24px;
+      display: block;
+    }
+
+    .cta-btn {
+      display: inline-block;
+      padding: 16px 40px;
+      border: 1px solid var(--cream);
+      color: var(--cream);
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+      text-decoration: none;
+      font-family: inherit;
+      cursor: none;
+      background: none;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    .cta-btn:hover {
+      background: var(--cream);
+      color: var(--dark);
+    }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-copy {
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: rgba(238,235,222,0.25);
+      text-transform: uppercase;
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: 28px;
+    }
+
+    .footer-social {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--cream-dim);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.25s;
+    }
+
+    .footer-social:hover { color: var(--cream); }
+
+    /* ─── Menu Overlay ─── */
+    .menu-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--darker);
+      z-index: 150;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 48px;
+      clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+      transition: clip-path 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+
+    .menu-overlay.open {
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+
+    .menu-links {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .menu-link {
+      font-size: clamp(42px, 7vw, 90px);
+      font-weight: 900;
+      color: rgba(238,235,222,0.08);
+      text-decoration: none;
+      letter-spacing: -2px;
+      text-transform: uppercase;
+      line-height: 1.05;
+      cursor: none;
+      background: none;
+      border: none;
+      font-family: inherit;
+      transform: translateY(30px);
+      opacity: 0;
+      text-align: left;
+      transition: color 0.3s;
+    }
+
+    .menu-overlay.open .menu-link {
+      animation: menuLinkIn 0.6s ease forwards;
+    }
+
+    .menu-link:nth-child(1) { animation-delay: 0.15s !important; }
+    .menu-link:nth-child(2) { animation-delay: 0.22s !important; }
+    .menu-link:nth-child(3) { animation-delay: 0.29s !important; }
+    .menu-link:nth-child(4) { animation-delay: 0.36s !important; }
+    .menu-link:nth-child(5) { animation-delay: 0.43s !important; }
+
+    @keyframes menuLinkIn {
+      to { opacity: 1; transform: translateY(0); color: rgba(238,235,222,0.15); }
+    }
+
+    .menu-link:hover {
+      color: var(--cream) !important;
+    }
+
+    .menu-line {
+      position: absolute;
+      bottom: 60px;
+      left: 48px; right: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .menu-socials {
+      display: flex;
+      gap: 28px;
+    }
+
+    .menu-soc {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--cream-dim);
+      text-transform: uppercase;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.25s;
+    }
+
+    .menu-soc:hover { color: var(--cream); }
+
+    .menu-contact-info {
+      font-size: 12px;
+      color: var(--cream-dim);
+      letter-spacing: 1px;
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 900px) {
+      section { padding: 80px 24px; }
+      .nav { padding: 24px; }
+      .about-inner { grid-template-columns: 1fr; gap: 40px; }
+      .services-grid { grid-template-columns: 1fr 1fr; }
+      .service-card:nth-child(3n) { border-right: 1px solid var(--border); }
+      .service-card:nth-child(2n) { border-right: none; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .footer-cta { grid-template-columns: 1fr; }
+      .footer-cta-right { text-align: left; }
+      .footer { padding: 60px 24px 40px; }
+      .menu-overlay { padding: 0 24px; }
+      .menu-link { font-size: clamp(36px, 10vw, 60px); }
+      .project-item { grid-template-columns: 40px 1fr; }
+      .project-tags { display: none; }
+      .work-header { flex-direction: column; align-items: flex-start; gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- ─── NAV ─── -->
+  <nav class="nav">
+    <button class="nav-btn" id="menuToggle">Menu</button>
+    <div class="logo-wrap">
+      <svg width="36" height="36" viewBox="0 0 80 80" fill="none">
+        <path d="M40 8L68 30V72H12V30L40 8Z" stroke="#EEEBDE" stroke-width="2.5" fill="none"/>
+        <path d="M28 72V50Q28 43 35 43H45Q52 43 52 50V72" stroke="#EEEBDE" stroke-width="2.5" fill="none"/>
+        <circle cx="56" cy="18" r="6" fill="#C8502A"/>
+      </svg>
+    </div>
+    <button class="nav-btn">Let's Talk</button>
+  </nav>
+
+  <!-- ─── MENU OVERLAY ─── -->
+  <div class="menu-overlay" id="menuOverlay">
+    <div class="menu-links">
+      <button class="menu-link">Home</button>
+      <button class="menu-link">Services</button>
+      <button class="menu-link">Selected Work</button>
+      <button class="menu-link">About</button>
+      <button class="menu-link">Contact</button>
+    </div>
+    <div class="menu-line">
+      <div class="menu-socials">
+        <a class="menu-soc" href="https://www.instagram.com/bluehousefilm/" target="_blank">Instagram</a>
+        <a class="menu-soc" href="https://www.youtube.com/c/BlueHouseFilm" target="_blank">YouTube</a>
+        <a class="menu-soc" href="https://www.linkedin.com/company/blue-house-film/" target="_blank">LinkedIn</a>
+      </div>
+      <div class="menu-contact-info">info@bluehousefilm.com</div>
+    </div>
+  </div>
+
+  <!-- ─── HERO SLIDER ─── -->
+  <section class="hero">
+    <div class="slider">
+      <div class="slide slide-1 active">
+        <div class="slide-bg"></div>
+      </div>
+      <div class="slide slide-2">
+        <div class="slide-bg"></div>
+      </div>
+      <div class="slide slide-3">
+        <div class="slide-bg"></div>
+      </div>
+      <div class="slide slide-4">
+        <div class="slide-bg"></div>
+      </div>
+    </div>
+
+    <div class="hero-content">
+      <p class="hero-eyebrow">Creative Agency & Production House</p>
+      <h1 class="hero-title">
+        <span>Blue</span>
+        <span class="accent-word">House</span>
+        <span>Film</span>
+      </h1>
+      <p class="hero-sub">For the modern world — cinematic storytelling that moves, inspires, and endures</p>
+    </div>
+
+    <div class="hero-bottom">
+      <div class="slide-counter">
+        <span id="currentSlide">01</span> / 04
+      </div>
+      <div class="slider-dots">
+        <div class="dot active" data-index="0"></div>
+        <div class="dot" data-index="1"></div>
+        <div class="dot" data-index="2"></div>
+        <div class="dot" data-index="3"></div>
+      </div>
+      <div class="hero-scroll">
+        <span class="scroll-line"></span>
+        Scroll
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── TICKER ─── -->
+  <div class="ticker-wrap">
+    <div class="ticker-track">
+      <div class="ticker-item"><span class="ticker-sep"></span>CNN</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>BBC</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>Channel 4</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>AFP</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>Al Jazeera</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>The Guardian</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>UNRWA</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>Al Mayadeen</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>Al Jadeed</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>Byblos Bank</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>Republic of Lebanon</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>Fiat Panis</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>News Corp</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>Al Arabiya</div>
+      <!-- duplicate for loop -->
+      <div class="ticker-item"><span class="ticker-sep"></span>CNN</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>BBC</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>Channel 4</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>AFP</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>Al Jazeera</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>The Guardian</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>UNRWA</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>Al Mayadeen</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>Al Jadeed</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>Byblos Bank</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>Republic of Lebanon</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>Fiat Panis</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>News Corp</div>
+      <div class="ticker-item"><span class="ticker-sep"></span>Al Arabiya</div>
+    </div>
+  </div>
+
+  <!-- ─── ABOUT / SERVICES ─── -->
+  <section style="background: var(--dark);">
+    <div class="about-inner">
+      <div class="about-left">
+        <p class="section-eyebrow">What we do</p>
+        <h2 class="section-heading">Crafting cinematic excellence — from script to screen</h2>
+        <p class="about-body">We create compelling films and provide full-service solutions for storytelling success. From documentary to commercial, we bring stories to life with purpose and precision.</p>
+      </div>
+      <div class="about-right">
+        <div style="border-left: 1px solid var(--border); padding-left: 48px;">
+          <div style="margin-bottom: 32px;">
+            <div style="font-size: 40px; font-weight: 900; margin-bottom: 4px;">17+</div>
+            <div style="font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--cream-dim);">Years of experience</div>
+          </div>
+          <div style="margin-bottom: 32px;">
+            <div style="font-size: 40px; font-weight: 900; margin-bottom: 4px;">200+</div>
+            <div style="font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--cream-dim);">Projects delivered</div>
+          </div>
+          <div>
+            <div style="font-size: 40px; font-weight: 900; margin-bottom: 4px;">40+</div>
+            <div style="font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--cream-dim);">Global clients</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SERVICES ─── -->
+  <section style="background: var(--darker); padding-top: 0;">
+    <div class="services-inner">
+      <div class="services-header">
+        <p class="section-eyebrow">Services</p>
+        <h2 class="section-heading">Full-service production from concept to delivery</h2>
+      </div>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-num">01</div>
+          <div class="service-title">Production Services</div>
+          <div class="service-items">/ Coordination<br>/ On-Set Management<br>/ Post-Production<br>/ Visual Effects</div>
+        </div>
+        <div class="service-card">
+          <div class="service-num">02</div>
+          <div class="service-title">Documentary Filmmaking</div>
+          <div class="service-items">/ Research<br>/ Exclusive Access<br>/ Full Production<br>/ Editing</div>
+        </div>
+        <div class="service-card">
+          <div class="service-num">03</div>
+          <div class="service-title">Commercial Production</div>
+          <div class="service-items">/ Creative Campaigns<br>/ Corporate Videos<br>/ Video Commercials<br>/ Brand Storytelling</div>
+        </div>
+        <div class="service-card">
+          <div class="service-num">04</div>
+          <div class="service-title">Digital Content</div>
+          <div class="service-items">/ Social Media Videos<br>/ Branded Content<br>/ Dynamic Ads<br>/ Immersive Formats</div>
+        </div>
+        <div class="service-card">
+          <div class="service-num">05</div>
+          <div class="service-title">AI Video Production</div>
+          <div class="service-items">/ Animation<br>/ Commercial<br>/ Trailers<br>/ Short Films</div>
+        </div>
+        <div class="service-card">
+          <div class="service-num">06</div>
+          <div class="service-title">Marketing Campaigns</div>
+          <div class="service-items">/ Strategic Planning<br>/ Omnichannel<br>/ Audience Analytics<br>/ Media Impact</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SELECTED WORK ─── -->
+  <section style="background: var(--dark);">
+    <div class="work-inner">
+      <div class="work-header">
+        <div>
+          <p class="section-eyebrow">Selected</p>
+          <h2 class="section-heading">Work</h2>
+        </div>
+        <a class="work-link" href="#">View all projects →</a>
+      </div>
+      <div class="projects-list">
+        <a class="project-item" href="#">
+          <span class="project-num">01</span>
+          <span class="project-title">The Jumblatt's: The Obstinacy of Mount Lebanon</span>
+          <div class="project-tags">
+            <span class="project-tag">Documentary</span>
+            <span class="project-tag">2024</span>
+          </div>
+        </a>
+        <a class="project-item" href="#">
+          <span class="project-num">02</span>
+          <span class="project-title">Captagon: The Drug of the Syrian War</span>
+          <div class="project-tags">
+            <span class="project-tag">Documentary</span>
+            <span class="project-tag">Al Jazeera</span>
+          </div>
+        </a>
+        <a class="project-item" href="#">
+          <span class="project-num">03</span>
+          <span class="project-title">The Great Deception</span>
+          <div class="project-tags">
+            <span class="project-tag">Film</span>
+            <span class="project-tag">2023</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── TESTIMONIALS ─── -->
+  <section style="background: var(--darker);">
+    <div class="testimonials-inner">
+      <div class="testimonials-header">
+        <p class="section-eyebrow">Testimonials</p>
+        <h2 class="section-heading">We collaborate with visionaries, from rising creators to renowned professionals</h2>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <p class="t-text">'It has been an honour working with Bluehouse Film who have been very professional in their approach to the production throughout. We have built a solid relationship and look forward to future collaborations.'</p>
+          <div class="t-name">Sean Murray</div>
+          <div class="t-role">Creative Director, Relapse Pictures</div>
+        </div>
+        <div class="testimonial-card">
+          <p class="t-text">'Blue House Film are a collective of some of the most dedicated and talented filmmakers I've ever had the pleasure of working with. Their work is audacious & emotive and I am very proud to be associated with them.'</p>
+          <div class="t-name">Tadhg Hickey</div>
+          <div class="t-role">Writer & Filmmaker</div>
+        </div>
+        <div class="testimonial-card">
+          <p class="t-text">'Collaborating with Blue House Film during the Lebanon conflict was exceptional. Their professionalism ensured safe, high-quality coverage for Rai 1. They're reliable, skilled, and a true partner in challenging situations.'</p>
+          <div class="t-name">Daniele Piervincenzi</div>
+          <div class="t-role">Italian — Rai 1</div>
+        </div>
+        <div class="testimonial-card">
+          <p class="t-text">'Blue House Film is one of the few true full-service production teams I've worked with in the region. For challenging projects, they're always my first choice and I often recommend them to others.'</p>
+          <div class="t-name">Chavala Madlena</div>
+          <div class="t-role">Investigative Journalist and Director</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ─── -->
+  <footer class="footer">
+    <div class="footer-cta">
+      <div class="footer-headline">
+        <div>Let's</div>
+        <div class="outline">Talk</div>
+      </div>
+      <div class="footer-cta-right">
+        <span class="footer-email">info@bluehousefilm.com</span>
+        <button class="cta-btn">Get in touch</button>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025 Blue House Film — All rights reserved</div>
+      <div class="footer-socials">
+        <a class="footer-social" href="https://www.instagram.com/bluehousefilm/" target="_blank">Instagram</a>
+        <a class="footer-social" href="https://www.youtube.com/c/BlueHouseFilm" target="_blank">YouTube</a>
+        <a class="footer-social" href="https://www.linkedin.com/company/blue-house-film/" target="_blank">LinkedIn</a>
+        <a class="footer-social" href="https://www.doova.ai/" target="_blank">Doova.ai</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ─── Custom Cursor ───
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx + 'px';
+      cursor.style.top = my + 'px';
+    });
+
+    function animateRing() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    document.querySelectorAll('a, button, .dot, .project-item').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.width = '20px';
+        cursor.style.height = '20px';
+        ring.style.width = '56px';
+        ring.style.height = '56px';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.width = '10px';
+        cursor.style.height = '10px';
+        ring.style.width = '36px';
+        ring.style.height = '36px';
+      });
+    });
+
+    // ─── Hero Slider ───
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    const counterEl = document.getElementById('currentSlide');
+    let current = 0;
+    let sliderInterval;
+
+    function goToSlide(idx) {
+      slides[current].classList.remove('active');
+      dots[current].classList.remove('active');
+      current = idx;
+      slides[current].classList.add('active');
+      dots[current].classList.add('active');
+      counterEl.textContent = String(current + 1).padStart(2, '0');
+    }
+
+    function nextSlide() {
+      goToSlide((current + 1) % slides.length);
+    }
+
+    sliderInterval = setInterval(nextSlide, 5000);
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        clearInterval(sliderInterval);
+        goToSlide(parseInt(dot.dataset.index));
+        sliderInterval = setInterval(nextSlide, 5000);
+      });
+    });
+
+    // ─── Menu ───
+    const toggle = document.getElementById('menuToggle');
+    const overlay = document.getElementById('menuOverlay');
+    let open = false;
+
+    toggle.addEventListener('click', () => {
+      open = !open;
+      overlay.classList.toggle('open', open);
+      toggle.textContent = open ? 'Close' : 'Menu';
+    });
+
+    overlay.querySelectorAll('.menu-link').forEach(btn => {
+      btn.addEventListener('click', () => {
+        open = false;
+        overlay.classList.remove('open');
+        toggle.textContent = 'Menu';
+      });
+    });
+
+    // ─── Ticker hover slow ───
+    const track = document.querySelector('.ticker-track');
+    track.addEventListener('mouseenter', () => track.style.animationDuration = '55s');
+    track.addEventListener('mouseleave', () => track.style.animationDuration = '22s');
+  </script>
+  <script>
+
+(function() {
+    'use strict';
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+
+        if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
+            e.preventDefault();
+            return false;
+        }
+
+   if (e.ctrlKey && (e.key === 'u' || e.keyCode === 85)) {
+        e.preventDefault();
+        return false;
+    }
+    });
+
+    const devToolsCheck = function() {
+        if (window.console && window.console.time) {
+                (function() {
+                    (function() {
+                        debugger;
+                    }).apply(this, ['alwaysOn']);
+                })();
+         
+        }
+    };
+    
+
+    setInterval(devToolsCheck, 1000);
+
+
+    document.addEventListener('copy', function(e) {
+        e.preventDefault();
+    });
+
+})();
+</script>
+</body>
+</html>
